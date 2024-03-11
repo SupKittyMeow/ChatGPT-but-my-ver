@@ -1,8 +1,6 @@
 from gpt4all import GPT4All
-from requests import session
 import scratchattach as scratch3
 import os
-from keep_repl_alive import keep_alive
 
 chars = [
     "", "", "", "", "", "", "", "", "", " ", "a", "b", "c", "d", "e", "f", "g",
@@ -88,7 +86,7 @@ conn = scratch3.CloudConnection(project_id="967781599",
                                 username="SupKittyMeow",
                                 session_id=sID)
 oldVar = get_prompt()
-keep_alive()
+print('Ready!')
 while True:
   prompt = get_prompt()
   if not oldVar == prompt and not prompt == None:

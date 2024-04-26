@@ -1,6 +1,10 @@
-from gpt4all import GPT4All
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from huggingface_hub import login
+import torch
 import scratchattach as scratch3
 import os
+
+login()
 
 chars = [
     "", "", "", "", "", "", "", "", "", " ", "a", "b", "c", "d", "e", "f", "g",
@@ -10,11 +14,15 @@ chars = [
     "\"", ":", "?", ">", "<", "_", "+", ")", "(", "*", "&", "^", "%", "$", "#",
     "@", "!", "¶", "\r"
 ]
-model = GPT4All("orca-mini-3b-gguf2-q4_0.gguf")
+tokenizer = AutoTokenizer.from_pretrained("google/gemma-2b-it")
+model = AutoModelForCausalLM.from_pretrained(
+    "google/gemma-2b-it",
+    torch_dtype=torch.bfloat16
+)
 
-
-def ask_gpt4all(prompt, model, mt):
-  output = model.generate(prompt, temp=0, max_tokens=mt)
+def ask_gpt4all(prompt, mt):
+  output = tokenizer(prompt, return_tensors="pt")
+  output = model.generate(output)
   print('Output: ' + output)
   return output
 
@@ -66,7 +74,7 @@ def get_prompt():
 
 
 def set_answer(data):
-  conn.set_var("Response", data)
+  conn.set_varer("Response", data)
   print("Sent!")
 
 
@@ -80,13 +88,11 @@ def doTheStuff(prompt):
   encodedData = encode(data.lower(), decodedQuestion[1].lower())
   set_answer(encodedData)
 
+sID = os.getenv('sessionid')
+session = scratch3.Session(sID, username="SupKittyMeow")
+conn = session.connect_cloud("967781599")
 
-sID = os.environ['SESSIONID']
-conn = scratch3.CloudConnection(project_id="967781599",
-                                username="SupKittyMeow",
-                                session_id=sID)
 oldVar = get_prompt()
-print('Ready!')
 while True:
   prompt = get_prompt()
   if not oldVar == prompt and not prompt == None:

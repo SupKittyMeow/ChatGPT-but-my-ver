@@ -1,2 +1,2 @@
 scratchattach==1.5.7
-gpt4all==2.2.1.post1
+transformers==4.40.1
